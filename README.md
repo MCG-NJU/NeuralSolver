@@ -43,10 +43,10 @@ Compared to Henu/RK4, the linear-multi-step solver is more stable and faster.
 
 ## Visualizations of zero-shot T2I
 
-### Flux Models with Euler-shift3 and our NeuralSolver(searched on SiT-XL-R256) under CFG=2.0
+#### Flux Models with Euler-shift3 and our NeuralSolver(searched on SiT-XL-R256) under CFG=2.0
 ![](./figs/flux_cfg2.png)
 
-### PixArt Models with UniPC/DPMSolver++ and our NeuralSolver(searched on DiT-XL-R256) under CFG=2.0
+#### PixArt Models with UniPC/DPMSolver++ and our NeuralSolver(searched on DiT-XL-R256) under CFG=2.0
 ![](./figs/pixart1024_cfg2.png)
 
 
