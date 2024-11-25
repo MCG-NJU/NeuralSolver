@@ -1,0 +1,150 @@
+# lightning.pytorch==2.2.1
+seed_everything: true
+torch_hub_dir: null
+huggingface_cache_dir: null
+tags:
+  exp: trajscut_fm_flowdcnb_lion_t100
+  b: &batch_size 4 # batch_per_process
+  s: &step 6
+  e: &max_num_epochs 5
+trainer:
+  accelerator: auto
+  strategy: auto
+  devices: 0,
+  num_nodes: 1
+  precision: 16-mixed
+  callbacks:
+    - src.utils.callbacks.DummyCheckpointHook
+    - class_path: lightning.pytorch.callbacks.model_checkpoint.ModelCheckpoint
+      init_args:
+        monitor: fid
+        every_n_epochs: 1
+        save_top_k: 1
+    - class_path: src.utils.callbacks.GradientMonitor
+  fast_dev_run: null
+  max_epochs: *max_num_epochs
+  min_epochs: null
+  max_steps: -1
+  min_steps: null
+  max_time: null
+  limit_train_batches: null
+  limit_val_batches: null
+  limit_test_batches: null
+  limit_predict_batches: null
+  overfit_batches: 0.0
+  val_check_interval: null
+  check_val_every_n_epoch: 1
+  num_sanity_val_steps: 2
+  log_every_n_steps: 1
+  enable_checkpointing: null
+  enable_progress_bar: null
+  enable_model_summary: null
+  accumulate_grad_batches: 1
+  gradient_clip_val: null
+  gradient_clip_algorithm: null
+  deterministic: null
+  benchmark: null
+  inference_mode: true
+  use_distributed_sampler: false
+  profiler: null
+  detect_anomaly: false
+  barebones: false
+  sync_batchnorm: false
+  reload_dataloaders_every_n_epochs: 1
+  default_root_dir: null
+model:
+  vae:
+    class_path: src.utils.vae.LatentVAE
+    init_args:
+      precompute: true
+      weight_path:  stabilityai/sd-vae-ft-ema
+  train_denoisers:
+    - class_path: src.models.msd.DeformableDit
+      init_args:
+        patch_size: 2
+        in_channels: 4
+        num_groups: 12
+        hidden_size: 768
+        num_blocks: 12
+        num_classes: 1000
+        learn_sigma: true
+        load_ema: true
+        weight_path: ./pretrained/flowdcn_s.pt
+  eval_denoiser:
+    class_path: src.models.dit.Dit
+    init_args:
+      input_size: 32
+      patch_size: 2
+      in_channels: 4
+      num_groups: 16
+      hidden_size: 1152
+      num_blocks: 28
+      num_classes: 1000
+      learn_sigma: true
+      load_ema: false
+      weight_path: ./pretrained/flowdcn_s.pt
+  metric:
+    class_path: src.utils.metrics.UnifiedMetric
+    init_args:
+      enabled_metrics:
+        - fid
+        - is
+        - sfid
+      reset_real_features: false
+      precompute_data_path:
+        fid: /data/oss_bucket_0/wangshuai/pretrain_models/precompute/imagenet256_fid_train.pt
+        sfid: /data/oss_bucket_0/wangshuai/pretrain_models/precompute/imagenet256_sfid_train.pt
+  solver_trainer:
+    class_path: src.diffusion.solver_training.TrajsTrainer
+    init_args:
+       max_cfg_aug: 1.0
+       min_cfg_aug: 1.0
+  target_sampler:
+    class_path: src.diffusion.flow_matching.sampling2.FlowMatchEulerSampler
+    init_args:
+      num_steps: 100
+      scheduler: &scheduler src.diffusion.flow_matching.scheduling.LinearScheduler
+      guidance_fn: &guidance_fn src.diffusion.base.guidance.simple_guidance_fn
+      null_class: 1000
+      w_scheduler: src.diffusion.flow_matching.scheduling.LinearScheduler
+      step_fn: &step_fn src.diffusion.flow_matching.sampling2.ode_step_fn
+      guidance: &guidance 1.375
+  source_sampler:
+    class_path: src.diffusion.flow_matching.neural_sampling_nonsymsolver.FlowMatchNeuralSampler
+    init_args:
+      num_steps: *step
+      null_class: 1000
+      guidance: *guidance
+      scheduler: *scheduler
+      w_scheduler: src.diffusion.flow_matching.scheduling.LinearScheduler
+      guidance_fn: *guidance_fn
+      step_fn: *step_fn
+  optimizer:
+    class_path: lion_pytorch.Lion
+    init_args:
+      lr: 1e-2
+      weight_decay: 0.00
+data:
+  test_gen_root: data/pred
+  test_nature_root: data/val
+  train_batch_size: *batch_size
+  train_num_workers: 2
+  train_prefetch_factor: 8
+  eval_batch_size: 32
+  eval_num_workers: 4
+  eval_max_num_instances: 50000 # fid10k
+  eval_seeds: null
+  eval_selected_classes: null
+  pred_batch_size: 64
+  pred_num_workers: 2
+  pred_seeds: null
+  test_batch_size: 64
+  test_num_workers: 16
+  test_image_size:
+  - 256
+  - 256
+  num_classes: 1000
+  latent_shape:
+  - 4
+  - 32
+  - 32
