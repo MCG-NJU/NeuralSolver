@@ -6,7 +6,7 @@ This repository contains the code for the paper:
 #### [NEWS] [11.25] 🍺 Our searched NeuralSolvers and corresponding code are now available in the official repo!
 
 ## Methods
-Our motivation is that Adams-like linear multi-step methods employ larguage interpolations, ignoring the *x* related terms.
+Our motivation is that Adams-like linear multi-step methods employ lagrange interpolations, ignoring the *x* related terms.
 So we defines a universal interpolation function `P(x, t)` and directly estimate the pre-intergal **coefficients and timesteps** used in the sampling. 
 
 ![](./figs/method.png)
