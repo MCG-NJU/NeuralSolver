@@ -5,6 +5,7 @@ import logging
 from typing import Callable
 
 logger = logging.getLogger(__name__)
+
 class BaseSampler(nn.Module):
     def __init__(self,
                  null_class,
