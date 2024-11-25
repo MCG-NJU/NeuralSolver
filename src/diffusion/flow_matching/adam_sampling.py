@@ -37,6 +37,7 @@ class AdamLMSampler(BaseSampler):
                 logger.warning("current sampler is ODE sampler, but w_scheduler is enabled")
         self._register_parameters(order)
 
+    # TODO: try non-uniform timesteps ?
     def _register_parameters(self, order=2):
         self._raw_solver_coeffs = torch.nn.Parameter(torch.eye(self.num_steps) * 0, requires_grad=False)
         for i in range(1, self.num_steps):
