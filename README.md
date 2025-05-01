@@ -52,13 +52,9 @@ Compared to Henu/RK4, the linear-multi-step solver is more stable and faster.
 
 ## Citation
 ```bibtex
-@inproceedings{
-anonymous2024differentiable,
-title={Differentiable Solver Search for fast diffusion sampling},
-author={Anonymous},
-booktitle={Submitted to The Thirteenth International Conference on Learning Representations},
-year={2024},
-url={https://openreview.net/forum?id=FB84Wkn3Xp},
-note={under review}
+@article{wangdifferentiable,
+  title={Differentiable Solver Search for fast diffusion sampling},
+  author={Wang, Shuai and Li, Zexian and Song, Tianhui and Li, Xubin and Ge, Tiezheng and Zheng, Bo and Wang, Limin and others}
+}
 }
 ```
