@@ -1,5 +1,5 @@
 # NeuralSolver: Differentiable Solver Search for Fast Diffusion Sampling
-
+### Link：[https://huggingface.co/papers/2505.21114](https://huggingface.co/papers/2505.21114)
 ![](./figs/coeffs_timestep2.png)
 This repository contains the code for the paper:
 **Differentiable Solver Search for Fast Diffusion Sampling**
